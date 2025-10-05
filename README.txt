@@ -1,1 +1,1 @@
-Vrijeplek — Repo voor Netlify. Zie README in chat.
+ Vrijeplek — Repo voor Netlify. Zie README in chat.
