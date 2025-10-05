@@ -6,6 +6,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <!-- Inline overrides voor grote checkbox + groene link -->
+  <style>
+    a.link-green{
+      color:hsl(152 60% 34%); font-weight:700; text-decoration:underline;
+      text-decoration-thickness:1.5px; text-underline-offset:2px;
+    }
+    a.link-green:hover{ color:hsl(152 65% 28%); text-decoration-thickness:2px; }
+    label.terms{ display:inline-flex; align-items:center; gap:12px; font-weight:700; }
+    label.terms input[type="checkbox"]{
+      appearance:none; -webkit-appearance:none; width:24px; height:24px; margin:0; cursor:pointer;
+      border:2px solid hsl(152 60% 34%); border-radius:6px; background:#fff; display:inline-grid; place-content:center;
+    }
+    label.terms input[type="checkbox"]::after{
+      content:""; width:12px; height:7px; border:3px solid #fff; border-top:0; border-right:0;
+      transform:rotate(-45deg) scale(0); transition:transform .12s ease;
+    }
+    label.terms input[type="checkbox"]:checked{
+      background:hsl(152 60% 34%); border-color:hsl(152 60% 34%);
+    }
+    label.terms input[type="checkbox"]:checked::after{ transform:rotate(-45deg) scale(1); }
+    label.terms a.link-green{ pointer-events:auto; }
+  </style>
 </head>
 <body>
 <header class="site container">
@@ -34,17 +56,19 @@
       <div style="grid-column:1/-1"><label>Google Reviews (optioneel)</label><input id="c_reviews" placeholder="https://g.page/r/..."></div>
     </div>
 
-   <p>
-  <label>
-    <input type="checkbox" id="c_terms" required>
-    Ik ga akkoord met <a class="link-green" href="/voorwaarden.html" target="_blank" rel="noopener">de algemene voorwaarden</a> en no-showpolicy.
-  </label>
-</p>
-<div class="row" style="justify-content:center">
-  <button id="c_save" class="btn light">Gegevens opslaan</button>
-  <button id="c_sub" class="btn yellow" disabled>Start gratis maand</button>
-</div>
-
+    <p>
+      <label class="terms">
+        <input type="checkbox" id="c_terms" required>
+        Ik ga akkoord met
+        <a class="link-green" href="/voorwaarden.html" target="_blank" rel="noopener">de algemene voorwaarden</a>
+        en no-showpolicy.
+      </label>
+    </p>
+    <div class="row" style="justify-content:center">
+      <button id="c_save" class="btn light">Gegevens opslaan</button>
+      <button id="c_sub" class="btn yellow" disabled>Start gratis maand</button>
+    </div>
+    <p id="c_status" class="muted" style="text-align:center"></p>
   </section>
 
   <section class="card">
@@ -70,6 +94,7 @@
 <div class="toast"></div>
 
 <script>
+  // === Sectoren ===
   const sectors = [
     {id:'kapper', name:'Kapper/Barbier', emoji:'💇‍♂️'},
     {id:'tandarts', name:'Tandarts', emoji:'🦷'},
@@ -130,13 +155,27 @@
   }
   fill(biz);
 
+  // Terms interactiviteit
+  const cTerms = document.getElementById('c_terms');
+  const btnSub = document.getElementById('c_sub');
+  function toggleSub(){ btnSub.disabled = !cTerms.checked; }
+  cTerms.addEventListener('change', toggleSub);
+  toggleSub();
+  document.querySelectorAll('label.terms a').forEach(a=>{
+    a.addEventListener('click', e=> e.stopPropagation());
+  });
+
   $('#c_save').onclick=()=>{ biz=formData(); saveBiz(biz); toast('Gegevens opgeslagen.'); };
-  $('#c_sub').onclick=()=>{ if(!$('#c_terms').checked){ toast('Vink de voorwaarden aan.'); return; } toast('Abonnement start via Stripe zodra je functies koppelt.'); };
+  $('#c_sub').onclick=()=>{ 
+    if(!$('#c_terms').checked){ toast('Vink de voorwaarden aan.'); return; } 
+    toast('Abonnement start via Stripe zodra je functies koppelt.'); 
+  };
 
   // Slots
   const date=$('#date'), tstart=$('#tstart'), tend=$('#tend'), discount=$('#discount');
 
   $('#seed').onclick=()=>{
+    biz = JSON.parse(localStorage.getItem('vpbe_biz')||'null') || formData();
     const base=Date.now()+60*60*1000;
     const demo=[
       {bizName:(biz&&biz.name)||'Hotel Eden', sector:'hotel', sectorName:'Hotel', city:(biz&&biz.city)||'Hasselt', zip:(biz&&biz.zip)||'3500', start:base, end:base+12*60*60000, discount:15, owner:(biz&&biz.id)||'demo'},
@@ -174,8 +213,3 @@
 </script>
 </body>
 </html>
-<script>
-  document.querySelectorAll('label.terms a').forEach(a=>{
-    a.addEventListener('click', e=> e.stopPropagation());
-  });
-</script>
