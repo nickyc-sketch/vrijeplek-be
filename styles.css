@@ -205,3 +205,21 @@ a.link-green{
 }
 a.link-green:hover{ color: hsl(152 65% 28%); text-decoration-thickness: 2px; }
 label a.link-green{ pointer-events: auto; }
+/* --- Terms checkbox groter + inline naast de zin --- */
+label.terms{
+  display:inline-flex;               /* naast de tekst */
+  align-items:center;                /* netjes uitgelijnd */
+  gap:10px;                          /* ruimte tussen vakje en tekst */
+  font-weight:700;                   /* mag iets opvallender */
+}
+
+label.terms input[type="checkbox"]{
+  transform: scale(1.35);            /* groter vakje */
+  transform-origin: center;
+  accent-color: hsl(152 60% 34%);    /* groen vinkje (moderne browsers) */
+  cursor: pointer;
+}
+
+/* zorg dat generieke label-stijl dit niet breekt */
+label{ display:block; }              /* jouw bestaande regel */
+label.terms{ display:inline-flex; }  /* override specifiek voor deze */
