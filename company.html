@@ -34,12 +34,17 @@
       <div style="grid-column:1/-1"><label>Google Reviews (optioneel)</label><input id="c_reviews" placeholder="https://g.page/r/..."></div>
     </div>
 
-    <p><label><input type="checkbox" id="c_terms"> Ik ga akkoord met de algemene voorwaarden en no-showpolicy.</label></p>
-    <div class="row" style="justify-content:center">
-      <button id="c_save" class="btn light">Gegevens opslaan</button>
-      <button id="c_sub" class="btn yellow">Start gratis maand</button>
-    </div>
-    <p id="c_status" class="muted" style="text-align:center"></p>
+   <p>
+  <label>
+    <input type="checkbox" id="c_terms" required>
+    Ik ga akkoord met <a class="link-green" href="/voorwaarden.html" target="_blank" rel="noopener">de algemene voorwaarden</a> en no-showpolicy.
+  </label>
+</p>
+<div class="row" style="justify-content:center">
+  <button id="c_save" class="btn light">Gegevens opslaan</button>
+  <button id="c_sub" class="btn yellow" disabled>Start gratis maand</button>
+</div>
+
   </section>
 
   <section class="card">
