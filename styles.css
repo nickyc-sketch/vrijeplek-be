@@ -223,3 +223,57 @@ label.terms input[type="checkbox"]{
 /* zorg dat generieke label-stijl dit niet breekt */
 label{ display:block; }              /* jouw bestaande regel */
 label.terms{ display:inline-flex; }  /* override specifiek voor deze */
+/* --- GROTE custom checkbox bij de voorwaarden --- */
+label.terms{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  font-weight:700;
+}
+
+/* reset en maak een grote, nette checkbox */
+label.terms input[type="checkbox"]{
+  appearance:none;
+  -webkit-appearance:none;
+  width:24px;                 /* << grootte hier */
+  height:24px;                /* << en hier */
+  border:2px solid hsl(152 60% 34%);
+  border-radius:6px;
+  background:#fff;
+  display:inline-grid;
+  place-content:center;
+  cursor:pointer;
+  margin:0;                   /* weg met default margin */
+}
+
+/* het vinkje tekenen */
+label.terms input[type="checkbox"]::after{
+  content:"";
+  width:12px;                 /* dikte van het vinkje */
+  height:7px;
+  border:3px solid #fff;
+  border-top:0; border-right:0;
+  transform:rotate(-45deg) scale(0);
+  transition:transform .12s ease;
+}
+
+/* aangevinkt = groene achtergrond + wit vinkje zichtbaar */
+label.terms input[type="checkbox"]:checked{
+  background:hsl(152 60% 34%);
+  border-color:hsl(152 60% 34%);
+}
+label.terms input[type="checkbox"]:checked::after{
+  transform:rotate(-45deg) scale(1);
+}
+
+/* de link groen en klikbaar houden */
+a.link-green{
+  color:hsl(152 60% 34%);
+  font-weight:700;
+  text-decoration:underline;
+  text-decoration-thickness:1.5px;
+  text-underline-offset:2px;
+}
+a.link-green:hover{ color:hsl(152 65% 28%); text-decoration-thickness:2px; }
+label.terms a.link-green{ pointer-events:auto; }
+
