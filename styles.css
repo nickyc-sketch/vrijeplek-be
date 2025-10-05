@@ -196,3 +196,12 @@ a.link-green:focus-visible{ outline: none; box-shadow: var(--ring); border-radiu
 
 /* Zorg dat link in label écht klikbaar blijft */
 label a.link-green{ pointer-events: auto; }
+a.link-green{
+  color: hsl(152 60% 34%);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+a.link-green:hover{ color: hsl(152 65% 28%); text-decoration-thickness: 2px; }
+label a.link-green{ pointer-events: auto; }
