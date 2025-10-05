@@ -142,5 +142,36 @@
     location.href = `/feed.html#zip=${encodeURIComponent(zip)}&sec=${encodeURIComponent(sec)}&when=${encodeURIComponent(when)}${dateParam}`;
   };
 </script>
+  <script>
+  const $ = (q)=>document.querySelector(q);
+
+  function goToFeed(){
+    const params = new URLSearchParams();
+
+    // Optioneel: sector/zip/datum heb je waarschijnlijk al – we nemen ze mee als ze bestaan
+    const name = $('#q')?.value.trim();
+    const sector = document.getElementById('sector')?.value;
+    const zip = document.getElementById('zip')?.value?.trim();
+    const when = document.querySelector('.segment button.active')?.dataset?.when;
+    const date = document.getElementById('date')?.value;
+
+    if (name)   params.set('q', name);
+    if (sector && sector !== 'all') params.set('sector', sector);
+    if (zip)    params.set('zip', zip);
+    if (when)   params.set('when', when);
+    if (date)   params.set('date', date);
+
+    location.href = '/feed.html' + (params.toString() ? `?${params}` : '');
+  }
+
+  // Koppel aan jouw zoekknop (pas #find aan naar de id van jouw knop)
+  document.getElementById('find')?.addEventListener('click', goToFeed);
+
+  // Enter-toets in naamveld start ook de zoekopdracht
+  document.getElementById('q')?.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); goToFeed(); }
+  });
+</script>
+
 </body>
 </html>
