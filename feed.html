@@ -62,5 +62,102 @@
   render();
   setInterval(render, 15000);
 </script>
+  <script>
+  const $ = (q)=>document.querySelector(q);
+  const slots = ()=> JSON.parse(localStorage.getItem('vpbe_slots')||'[]');
+  const grid = document.getElementById('results') || document.getElementById('feed') || document.querySelector('.grid'); // fallback
+
+  const params = new URLSearchParams(location.search);
+  const initialQ = (params.get('q') || '').trim();
+  const sector   = params.get('sector') || '';
+  const zip      = params.get('zip') || '';
+  const when     = params.get('when') || '';
+  const dateStr  = params.get('date') || '';
+
+  // Prefill de zoekbox
+  const qInput = document.getElementById('q');
+  if(qInput) qInput.value = initialQ;
+
+  const fmtDate = ts=> new Date(ts).toLocaleDateString('nl-BE',{weekday:'short',day:'2-digit',month:'short'});
+  const fmtTime = ts=> new Date(ts).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'});
+
+  function withinWhen(s){
+    if(!when) return true;
+    const d = new Date(); d.setHours(0,0,0,0);
+    const start = new Date(s.start);
+    start.setSeconds(0,0);
+    if(when==='today'){
+      const endOfDay = new Date(d); endOfDay.setDate(d.getDate()+1);
+      return start >= d && start < endOfDay;
+    }
+    if(when==='tomorrow'){
+      const t0 = new Date(d); t0.setDate(d.getDate()+1);
+      const t1 = new Date(d); t1.setDate(d.getDate()+2);
+      return start >= t0 && start < t1;
+    }
+    if(when==='date' && dateStr){
+      const t0 = new Date(dateStr+"T00:00:00");
+      const t1 = new Date(dateStr+"T23:59:59");
+      return start >= t0 && start <= t1;
+    }
+    return true;
+  }
+
+  function matchesName(s, q){
+    if(!q) return true;
+    const hay = (s.bizName || '').toLowerCase();
+    return hay.includes(q.toLowerCase());
+  }
+
+  function matchesSector(s, sectorId){
+    if(!sectorId) return true;
+    return s.sector === sectorId;
+  }
+
+  function matchesZip(s, z){
+    if(!z) return true;
+    return (s.zip||'').toString().startsWith(z);
+  }
+
+  function render(list){
+    if(!grid) return;
+    grid.innerHTML = list.map(s => `
+      <article class="slot">
+        <div class="title">${s.bizName}</div>
+        <div class="meta">${fmtDate(s.start)} • ${s.city||''} ${s.zip||''} • ${s.sectorName||s.sector||''}</div>
+        <div class="timeband">🕒 ${fmtTime(s.start)} — ${fmtTime(s.end)}</div>
+        <div><a class="btn" href="/slot.html#${s.id}">Claimen</a></div>
+      </article>
+    `).join('') || '<div class="muted">Geen resultaten.</div>';
+  }
+
+  function applyFilters(){
+    const q = qInput ? qInput.value.trim() : initialQ;
+    let list = slots().filter(s =>
+      matchesName(s, q) &&
+      matchesSector(s, sector) &&
+      matchesZip(s, zip) &&
+      withinWhen(s)
+    ).sort((a,b)=> a.start - b.start);
+    render(list);
+  }
+
+  // Init
+  applyFilters();
+
+  // Klik op "Filter" of Enter in het naamveld
+  document.getElementById('apply')?.addEventListener('click', applyFilters);
+  qInput?.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); applyFilters(); }
+  });
+
+  // Kleine live-update: na elke input, met debounce
+  let t;
+  qInput?.addEventListener('input', ()=>{
+    clearTimeout(t);
+    t = setTimeout(applyFilters, 150);
+  });
+</script>
+
 </body>
 </html>
