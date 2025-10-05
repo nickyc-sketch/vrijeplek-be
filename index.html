@@ -1,39 +1,49 @@
-
-<!doctype html><html lang="nl"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Vrijeplek — België</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css"></head><body>
-
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Vrijeplek — België</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
 <header class="site container">
   <div></div>
   <div class="brand">
-<span class="wordmark" role="img" aria-label="Vrijeplek">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
-  <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
-  <g transform="translate(6,6)">
-    <rect x="0" y="4" width="68" height="56" rx="12" fill="white" stroke="#e5e7eb" />
-    <rect x="0" y="4" width="68" height="18" rx="12" fill="url(#g1)"/>
-    <circle cx="18" cy="13" r="3" fill="white"/><circle cx="50" cy="13" r="3" fill="white"/>
-    <path d="M20 44 l8 8 20 -22" stroke="#f59e0b" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  <text x="86" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="#0f172a">Vrije</text>
-  <text x="152" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="url(#g1)">plek</text>
-  <text x="86" y="58" font-family="Inter, Arial" font-size="14" fill="#475569">België • last‑minute afspraken</text>
-</svg>
-</span>
-</div>
+    <span class="wordmark" aria-label="Vrijeplek">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
+        <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+        <g transform="translate(6,6)">
+          <rect x="0" y="4" width="68" height="56" rx="12" fill="white" stroke="#e5e7eb" />
+          <rect x="0" y="4" width="68" height="18" rx="12" fill="url(#g1)"/>
+          <circle cx="18" cy="13" r="3" fill="white"/><circle cx="50" cy="13" r="3" fill="white"/>
+          <path d="M20 44 l8 8 20 -22" stroke="#f59e0b" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="86" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="#0f172a">Vrije</text>
+        <text x="152" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="url(#g1)">plek</text>
+        <text x="86" y="58" font-family="Inter, Arial" font-size="14" fill="#475569">België • last-minute afspraken</text>
+      </svg>
+    </span>
+  </div>
   <nav><a class="btn business" href="/company.html">⚑ Voor bedrijven</a></nav>
 </header>
 
 <main class="container">
   <section class="card" style="text-align:center">
     <h2 style="font-size:36px;margin-bottom:6px;">Boek vandaag nog een vrij tijdslot in je buurt</h2>
-    <p class="muted" style="font-size:18px;margin-top:0">Kies sector en postcode. Zoek op <strong>vandaag</strong>, <strong>morgen</strong> of <strong>datum</strong>.</p>
-    <div class="searchbar">
-      <div class="input"><span>🔎</span><select id="sectorPick"><option value="">Kies sector</option></select></div>
-      <div class="input"><span>📍</span><input id="zip" placeholder="Postcode (bv. 3600)"></div>
+    <p class="muted" style="font-size:18px;margin-top:0">Kies sector en postcode. Zoek op <strong>Vandaag</strong>, <strong>Morgen</strong> of <strong>Datum</strong>.</p>
+
+    <div class="searchbar" style="margin:12px auto">
+      <div class="input" style="flex:1;max-width:320px">
+        <span>🔎</span>
+        <select id="sectorPick"><option value="">Kies sector</option></select>
+      </div>
+      <div class="input" style="flex:1;max-width:220px">
+        <span>📍</span><input id="zip" placeholder="Postcode (bv. 3600)">
+      </div>
       <div class="segment" id="whenSeg">
         <button data-when="today" class="active">Vandaag</button>
         <button data-when="tomorrow">Morgen</button>
@@ -42,20 +52,90 @@
       </div>
       <button id="goBtn" class="btn yellow">Zoek plekjes</button>
     </div>
+
+    <div id="chips" class="chips"></div>
   </section>
 </main>
+
 <footer>© Vrijeplek — België</footer>
 <div class="toast"></div>
-<script type="module">
-  import {{$,toast,sectors}} from '/js/utils.js';
-  const sectorPick = document.getElementById('sectorPick');
-  sectors.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=`${s.emoji} ${s.name}`; sectorPick.appendChild(o); });
-  let when='today'; const seg=document.querySelectorAll('#whenSeg button'); const dateInput=document.getElementById('pickDate');
-  seg.forEach(btn=> btn.onclick=()=>{ seg.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); when=btn.dataset.when; dateInput.disabled=(when!=='date'); });
-  document.getElementById('goBtn').onclick=()=>{
-    const s=sectorPick.value||''; const z=document.getElementById('zip').value.trim(); if(!z){ toast('Vul je postcode in.'); return; }
-    const dateParam=(when==='date'&&dateInput.value)?`&date=${encodeURIComponent(dateInput.value)}`:'';
-    location.href = `/feed.html#zip=${encodeURIComponent(z)}&sec=${encodeURIComponent(s)}&when=${encodeURIComponent(when)}${dateParam}`;
+
+<script>
+  // ====== Helpers & data (INLINE, zodat het altijd werkt) ======
+  const sectors = [
+    {id:'kapper', name:'Kapper/Barbier', emoji:'💇‍♂️'},
+    {id:'tandarts', name:'Tandarts', emoji:'🦷'},
+    {id:'nagels', name:'Nagelstyliste', emoji:'💅'},
+    {id:'schoonheid', name:'Schoonheidsspecialist', emoji:'💆'},
+    {id:'massage', name:'Masseur/Massagetherapeut', emoji:'👐'},
+    {id:'fysio', name:'Fysiotherapeut/Osteo', emoji:'🦴'},
+    {id:'fotograaf', name:'Fotograaf', emoji:'📸'},
+    {id:'dierenarts', name:'Dierenarts', emoji:'🐾'},
+    {id:'pt', name:'Personal Trainer', emoji:'🏋️'},
+    {id:'coach', name:'Coach/Mentor', emoji:'🧠'},
+    // Horeca
+    {id:'restaurant', name:'Restaurant', emoji:'🍽️'},
+    {id:'cafe', name:'Café', emoji:'☕'},
+    {id:'bar', name:'Bar', emoji:'🍸'},
+    {id:'brasserie', name:'Brasserie/Bistro', emoji:'🥖'},
+    {id:'pizzeria', name:'Pizzeria', emoji:'🍕'},
+    {id:'frituur', name:'Frituur/Snackbar', emoji:'🍟'},
+    {id:'lunchbar', name:'Lunchbar', emoji:'🥗'},
+    {id:'tearoom', name:'Tearoom', emoji:'🫖'},
+    {id:'foodtruck', name:'Foodtruck', emoji:'🚚'},
+    {id:'catering', name:'Catering', emoji:'👨‍🍳'},
+    {id:'koffiezaak', name:'Koffiezaak', emoji:'🫘'},
+    {id:'bakkerij', name:'Bakkerij', emoji:'🥐'},
+    // Stay
+    {id:'hotel', name:'Hotel', emoji:'🏨'},
+    {id:'bnb', name:'B&B / Gastenkamer', emoji:'🛏️'},
+    // Services
+    {id:'garage', name:'Garage/Autodienst', emoji:'🛠️'},
+    {id:'fietsen', name:'Fietsenmaker', emoji:'🚲'},
+    {id:'elektricien', name:'Elektricien', emoji:'💡'},
+    {id:'loodgieter', name:'Loodgieter', emoji:'🚿'},
+    {id:'koerier', name:'Koerier/Herstelling', emoji:'📦'},
+    {id:'andere', name:'Andere (zelf invullen)', emoji:'✨'}
+  ];
+  const $ = q => document.querySelector(q);
+  const toast = (m)=>{ const t=document.querySelector('.toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000) };
+
+  // ====== UI init ======
+  const sectorPick = $('#sectorPick');
+  sectors.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id; opt.textContent = `${s.emoji} ${s.name}`;
+    sectorPick.appendChild(opt);
+  });
+
+  const chips = $('#chips');
+  sectors.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = `${s.emoji} ${s.name}`;
+    b.onclick = () => { sectorPick.value = s.id; };
+    chips.appendChild(b);
+  });
+
+  let when='today';
+  const segBtns = document.querySelectorAll('#whenSeg button');
+  const dateInput = $('#pickDate');
+  segBtns.forEach(btn=>{
+    btn.onclick=()=>{
+      segBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      when = btn.dataset.when;
+      dateInput.disabled = (when!=='date');
+    };
+  });
+
+  $('#goBtn').onclick = ()=>{
+    const sec = sectorPick.value || '';
+    const zip = $('#zip').value.trim();
+    if(!zip){ toast('Vul je postcode in.'); return; }
+    const dateParam = (when==='date' && dateInput.value) ? `&date=${encodeURIComponent(dateInput.value)}` : '';
+    location.href = `/feed.html#zip=${encodeURIComponent(zip)}&sec=${encodeURIComponent(sec)}&when=${encodeURIComponent(when)}${dateParam}`;
   };
 </script>
-</body></html>
+</body>
+</html>
