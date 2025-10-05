@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "jose": "^5.2.0"
+  }
+}

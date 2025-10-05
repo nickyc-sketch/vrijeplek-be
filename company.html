@@ -1,0 +1,140 @@
+
+<!doctype html><html lang="nl"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Vrijeplek — Voor bedrijven</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css"></head><body>
+
+<header class="site container">
+  <div></div>
+  <div class="brand">
+<span class="wordmark" role="img" aria-label="Vrijeplek">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
+  <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+  <g transform="translate(6,6)">
+    <rect x="0" y="4" width="68" height="56" rx="12" fill="white" stroke="#e5e7eb" />
+    <rect x="0" y="4" width="68" height="18" rx="12" fill="url(#g1)"/>
+    <circle cx="18" cy="13" r="3" fill="white"/><circle cx="50" cy="13" r="3" fill="white"/>
+    <path d="M20 44 l8 8 20 -22" stroke="#f59e0b" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="86" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="#0f172a">Vrije</text>
+  <text x="152" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="url(#g1)">plek</text>
+  <text x="86" y="58" font-family="Inter, Arial" font-size="14" fill="#475569">België • last‑minute afspraken</text>
+</svg>
+</span>
+</div>
+  <nav><a class="btn business" href="/company.html">⚑ Voor bedrijven</a></nav>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2 style="text-align:center">Bedrijfsprofiel & Abonnement</h2>
+    <p class="muted" style="text-align:center">€9/maand — <strong>eerste maand gratis</strong>. Factuur elke maand per e‑mail.</p>
+    <div class="grid">
+      <div><label>Bedrijfsnaam</label><input id="c_name" placeholder="Barbershop Genk"></div>
+      <div><label>BTW-nummer</label><input id="c_vat" placeholder="BE0123.456.789"></div>
+      <div><label>Sector</label><select id="c_sector"></select></div>
+      <div><label>Website</label><input id="c_site" placeholder="https://..."></div>
+      <div><label>Factuur e‑mail</label><input id="c_invoice_email" placeholder="boekhouding@bedrijf.be"></div>
+      <div><label>Straat & nr</label><input id="c_addr" placeholder="Stationsstraat 1"></div>
+      <div><label>Postcode</label><input id="c_zip" placeholder="3600"></div>
+      <div><label>Gemeente</label><input id="c_city" placeholder="Genk"></div>
+      <div><label>Land</label><input id="c_country" value="België"></div>
+      <div style="grid-column:1/-1"><label>Google Reviews (optioneel)</label><input id="c_reviews" placeholder="https://g.page/r/..."></div>
+    </div>
+    <p><label><input type="checkbox" id="c_terms"> Ik ga akkoord met de algemene voorwaarden en no‑showpolicy.</label></p>
+    <div class="row" style="display:flex;gap:10px;justify-content:center">
+      <button id="c_save" class="btn">Gegevens opslaan</button>
+      <button id="c_sub" class="btn yellow">Start gratis maand (daarna €9/maand)</button>
+    </div>
+    <p id="c_status" class="muted" style="text-align:center"></p>
+  </section>
+
+  <section class="card">
+    <h2>Maak een vrij slot</h2>
+    <div class="grid">
+      <div><label>Datum</label><input id="date" type="date"></div>
+      <div><label>Begin</label><input id="tstart" type="time"></div>
+      <div><label>Einde</label><input id="tend" type="time"></div>
+      <div><label>Korting %</label><input id="discount" type="number" min="0" max="80" step="5" value="0"></div>
+    </div>
+    <div><button id="create" class="btn primary">+ Vrij slot</button>
+      <button id="seed" class="btn">Demo-slots</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Jouw slots</h2>
+    <div id="my" class="grid"></div>
+  </section>
+</main>
+<div class="toast"></div>
+<script type="module">
+  import {{$,toast,uid,sectors,slots,saveSlots,fmtDate,fmtTime}} from '/js/utils.js';
+  const sectorSel=document.getElementById('c_sector'); sectors.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=`${s.emoji} ${s.name}`; sectorSel.appendChild(o); });
+  let biz=JSON.parse(localStorage.getItem('vpbe_biz')||'null');
+  function formData(){ return {
+    name: document.getElementById('c_name').value.trim(),
+    vat: document.getElementById('c_vat').value.trim(),
+    sector: sectorSel.value||'andere',
+    sectorName: 'Andere',
+    site: document.getElementById('c_site').value.trim(),
+    invoice_email: document.getElementById('c_invoice_email').value.trim(),
+    addr: document.getElementById('c_addr').value.trim(),
+    zip: document.getElementById('c_zip').value.trim(),
+    city: document.getElementById('c_city').value.trim(),
+    country: document.getElementById('c_country').value.trim(),
+    reviews: document.getElementById('c_reviews').value.trim(),
+    id: JSON.parse(localStorage.getItem('vpbe_owner')||'null') || Math.random().toString(36).slice(2,10),
+    sub_status: (biz && biz.sub_status) || 'none'
+  }; }
+  function fill(b){ if(!b) return;
+    document.getElementById('c_name').value=b.name||'';
+    document.getElementById('c_vat').value=b.vat||'';
+    sectorSel.value=b.sector||'andere';
+    document.getElementById('c_site').value=b.site||'';
+    document.getElementById('c_invoice_email').value=b.invoice_email||'';
+    document.getElementById('c_addr').value=b.addr||'';
+    document.getElementById('c_zip').value=b.zip||'';
+    document.getElementById('c_city').value=b.city||'';
+    document.getElementById('c_country').value=b.country||'België';
+    document.getElementById('c_reviews').value=b.reviews||'';
+  }
+  function save(b){ localStorage.setItem('vpbe_owner', JSON.stringify(b.id)); localStorage.setItem('vpbe_biz', JSON.stringify(b)); }
+  function status(s){ document.getElementById('c_status').textContent = (s==='active')? 'Abonnement: actief.' : (s==='trialing')? 'Abonnement: in proefperiode.' : 'Geen actief abonnement.'; }
+  fill(biz);
+
+  document.getElementById('c_save').onclick=()=>{ biz=formData(); save(biz); toast('Gegevens opgeslagen.'); };
+  document.getElementById('c_sub').onclick=async()=>{ if(!document.getElementById('c_terms').checked){ toast('Vink de voorwaarden aan.'); return; } toast('Stripe Checkout opent na deploy.'); };
+
+  const date=document.getElementById('date'), tstart=document.getElementById('tstart'), tend=document.getElementById('tend'), discount=document.getElementById('discount');
+  document.getElementById('seed').onclick=()=>{
+    const base=Date.now()+60*60*1000;
+    const demo=[
+      {bizName:'Hotel Eden',sector:'hotel',sectorName:'Hotel',city:'Hasselt',zip:'3500',start:base,end:base+12*60*60000,discount:15,owner:'demo'},
+      {bizName:'Ristorante Napoli',sector:'restaurant',sectorName:'Restaurant',city:'Genk',zip:'3600',start:base,end:base+90*60000,discount:10,owner:'demo'}
+    ].map(x=> ({...x,id:Math.random().toString(36).slice(2,10),deposit:15,status:'open',country:'BE',created:Date.now()}));
+    const arr=JSON.parse(localStorage.getItem('vpbe_slots')||'[]'); localStorage.setItem('vpbe_slots', JSON.stringify(arr.concat(demo))); renderMy(); toast('Demo-slots toegevoegd');
+  };
+  document.getElementById('create').onclick=()=>{
+    biz=formData();
+    if(!biz.name){ toast('Bewaar eerst je bedrijfsprofiel.'); return; }
+    if(!date.value||!tstart.value||!tend.value){ toast('Kies datum, begin en eind.'); return; }
+    const start=new Date(`${date.value}T${tstart.value}`).getTime(), end=new Date(`${date.value}T${tend.value}`).getTime();
+    if(end<=start){ toast('Einde moet na begin liggen.'); return; }
+    const s={ id:Math.random().toString(36).slice(2,10), bizName: biz.name||'Bedrijf', sector: biz.sector||'andere', sectorName: biz.sectorName||'Andere', city: biz.city||'', zip: biz.zip||'', start, end, discount: Number(discount.value||0), owner: biz.id, deposit: 15, status:'open', country:'BE', created: Date.now() };
+    const arr=JSON.parse(localStorage.getItem('vpbe_slots')||'[]'); arr.push(s); localStorage.setItem('vpbe_slots', JSON.stringify(arr)); renderMy(); toast('Slot aangemaakt');
+  };
+  function renderMy(){
+    const o=JSON.parse(localStorage.getItem('vpbe_owner')||'null');
+    const arr=(JSON.parse(localStorage.getItem('vpbe_slots')||'[]')).filter(s=> !o || s.owner===o).sort((a,b)=>a.start-b.start);
+    document.getElementById('my').innerHTML = arr.map(s=>`<article class="slot">
+      <div class="title">${s.bizName}</div>
+      <div class="meta">${fmtDate(s.start)} • ${fmtTime(s.start)} — ${fmtTime(s.end)}</div>
+      <div class="meta">${s.city} ${s.zip} • 🇧🇪</div>
+      <div><a class="btn" href="/slot.html#${s.id}" target="_blank">Bekijk</a></div>
+    </article>`).join('') || '<div class="muted">Nog geen slots.</div>';
+  }
+  renderMy();
+</script>
+</body></html>

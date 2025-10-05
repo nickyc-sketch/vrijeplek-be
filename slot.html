@@ -1,0 +1,68 @@
+
+<!doctype html><html lang="nl"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Vrijeplek — Slot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css"></head><body>
+
+<header class="site container">
+  <div></div>
+  <div class="brand">
+<span class="wordmark" role="img" aria-label="Vrijeplek">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
+  <defs><linearGradient id="g1" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>
+  <g transform="translate(6,6)">
+    <rect x="0" y="4" width="68" height="56" rx="12" fill="white" stroke="#e5e7eb" />
+    <rect x="0" y="4" width="68" height="18" rx="12" fill="url(#g1)"/>
+    <circle cx="18" cy="13" r="3" fill="white"/><circle cx="50" cy="13" r="3" fill="white"/>
+    <path d="M20 44 l8 8 20 -22" stroke="#f59e0b" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="86" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="#0f172a">Vrije</text>
+  <text x="152" y="32" font-family="Inter, Arial" font-size="30" font-weight="900" fill="url(#g1)">plek</text>
+  <text x="86" y="58" font-family="Inter, Arial" font-size="14" fill="#475569">België • last‑minute afspraken</text>
+</svg>
+</span>
+</div>
+  <nav><a class="btn business" href="/company.html">⚑ Voor bedrijven</a></nav>
+</header>
+
+<main class="container">
+  <section class="card" style="text-align:center">
+    <h2>Vrij slot</h2>
+    <div id="slotInfo" class="muted">Laden…</div><hr>
+    <div class="grid">
+      <div><label>Naam</label><input id="name" placeholder="Jouw naam"></div>
+      <div><label>Telefoon</label><input id="phone" placeholder="+32 …"></div>
+      <div style="grid-column:1/-1"><label>Opmerkingen (optioneel)</label>
+        <input id="notes" placeholder="Bv. knippen + baard; 2 personen; allergieën; …"></div>
+    </div>
+    <p class="muted" style="max-width:700px;margin:8px auto 0">Bij claimen geldt <strong>voorschot €15</strong> (Payconiq-koppeling via Netlify Function).</p>
+    <div class="row" style="display:flex;justify-content:center">
+      <button id="pay" class="btn yellow">Betaal €15 met Payconiq</button>
+    </div>
+  </section>
+</main>
+<div class="modal" id="payModal">
+  <div class="panel">
+    <h3>Scan de Payconiq QR</h3>
+    <p class="muted">Koppeling zit in <code>/.netlify/functions/create-payment</code>.</p>
+    <div id="qrWrap" style="text-align:center"><canvas id="qr" width="240" height="240" style="background:#f1f5f9;border:1px dashed #cbd5e1;border-radius:12px"></canvas></div>
+    <p id="status" class="muted">Wachten op betaling…</p>
+    <div class="row" style="display:flex;justify-content:flex-end"><button class="btn" id="closePay">Sluiten</button></div>
+  </div>
+</div>
+<div class="toast"></div>
+<script type="module">
+  import {{$,toast,fmtDate,fmtTime,slots,saveSlots}} from '/js/utils.js';
+  const id=location.hash.replace('#',''); let arr=slots(); let slot=arr.find(s=> s.id===id); const info=document.getElementById('slotInfo');
+  function render(){ if(!slot){ info.textContent='Slot niet gevonden of verlopen.'; return; }
+    info.innerHTML=`<div class="slot"><div class="title">${slot.bizName}</div><div class="meta">📅 ${fmtDate(slot.start)} • 🕒 ${fmtTime(slot.start)} — ${fmtTime(slot.end)}</div></div>`; }
+  render();
+  const modal=document.getElementById('payModal'), statusEl=document.getElementById('status');
+  document.getElementById('pay').onclick=async()=>{ modal.style.display='flex'; statusEl.textContent='Aanmaken betaalverzoek…';
+    try{ const r=await fetch('/.netlify/functions/create-payment',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({amount:1500,currency:'EUR',description:`Voorschot Vrijeplek — ${slot?.bizName||'bedrijf'}`,slotId:slot?.id})}); const data=await r.json(); drawQR(data.qr||'QR'); statusEl.textContent='Scan met je app om te betalen…'; }catch(e){ statusEl.textContent='Kon betaalverzoek niet starten.'; } };
+  document.getElementById('closePay').onclick=()=>{ modal.style.display='none'; };
+  function drawQR(){ const c=document.getElementById('qr'),ctx=c.getContext('2d'); ctx.fillStyle='#f8fafc'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle='#94a3b8'; ctx.font='16px Inter, Arial'; ctx.fillText('QR (voorbeeld)', 70, 120); }
+</script>
+</body></html>
