@@ -22,6 +22,14 @@
     <div class="grid">
       <div><label>Naam</label><input id="name" placeholder="Jouw naam"></div>
       <div><label>Telefoon</label><input id="phone" placeholder="+32 …"></div>
+      const ok = document.getElementById('accept_terms')?.checked;
+if (!ok) { toast('Vink de voorwaarden aan.'); return; }
+
+// voorkom dat klikken op de link de checkbox toggelt
+document.querySelectorAll('label.terms a').forEach(a=>{
+  a.addEventListener('click', e => e.stopPropagation());
+});
+
       <div style="grid-column:1/-1"><label>Opmerkingen (optioneel)</label>
         <!-- Terms checkbox -->
 <div style="grid-column:1/-1; margin-top:6px">
