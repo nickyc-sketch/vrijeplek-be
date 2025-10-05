@@ -6,6 +6,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <!-- Inline overrides voor grote checkbox + groene link -->
+  <style>
+    a.link-green{
+      color:hsl(152 60% 34%); font-weight:700; text-decoration:underline;
+      text-decoration-thickness:1.5px; text-underline-offset:2px;
+    }
+    a.link-green:hover{ color:hsl(152 65% 28%); text-decoration-thickness:2px; }
+    label.terms{ display:inline-flex; align-items:center; gap:12px; font-weight:700; }
+    label.terms input[type="checkbox"]{
+      appearance:none; -webkit-appearance:none; width:24px; height:24px; margin:0; cursor:pointer;
+      border:2px solid hsl(152 60% 34%); border-radius:6px; background:#fff; display:inline-grid; place-content:center;
+    }
+    label.terms input[type="checkbox"]::after{
+      content:""; width:12px; height:7px; border:3px solid #fff; border-top:0; border-right:0;
+      transform:rotate(-45deg) scale(0); transition:transform .12s ease;
+    }
+    label.terms input[type="checkbox"]:checked{
+      background:hsl(152 60% 34%); border-color:hsl(152 60% 34%);
+    }
+    label.terms input[type="checkbox"]:checked::after{ transform:rotate(-45deg) scale(1); }
+    label.terms a.link-green{ pointer-events:auto; }
+  </style>
 </head>
 <body>
 <header class="site container">
@@ -22,27 +44,18 @@
     <div class="grid">
       <div><label>Naam</label><input id="name" placeholder="Jouw naam"></div>
       <div><label>Telefoon</label><input id="phone" placeholder="+32 …"></div>
-      const ok = document.getElementById('accept_terms')?.checked;
-if (!ok) { toast('Vink de voorwaarden aan.'); return; }
-
-// voorkom dat klikken op de link de checkbox toggelt
-document.querySelectorAll('label.terms a').forEach(a=>{
-  a.addEventListener('click', e => e.stopPropagation());
-});
-
       <div style="grid-column:1/-1"><label>Opmerkingen (optioneel)</label>
-        <!-- Terms checkbox -->
-<div style="grid-column:1/-1; margin-top:6px">
-  <label class="terms">
-    <input type="checkbox" id="accept_terms" required>
-    Ik ga akkoord met
-    <a class="link-green" href="/voorwaarden.html" target="_blank" rel="noopener">
-      de algemene voorwaarden
-    </a> en no-showregeling.
-  </label>
-</div>
-
         <input id="notes" placeholder="Bv. knippen + baard; 2 personen; allergieën; …"></div>
+      <!-- Terms checkbox -->
+      <div style="grid-column:1/-1; margin-top:6px">
+        <label class="terms">
+          <input type="checkbox" id="accept_terms" required>
+          Ik ga akkoord met
+          <a class="link-green" href="/voorwaarden.html" target="_blank" rel="noopener">
+            de algemene voorwaarden
+          </a> en no-showregeling.
+        </label>
+      </div>
     </div>
     <p class="muted" style="max-width:700px;margin:8px auto 0">
       Bij het claimen betaal je een <strong>voorschot €15</strong>. De zaak bevestigt je afspraak.
@@ -93,10 +106,21 @@ document.querySelectorAll('label.terms a').forEach(a=>{
 
   const toast = (m)=>{ const t=document.querySelector('.toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000) };
 
+  // Zorg dat klikken op de link de checkbox niet toggelt
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('label.terms a').forEach(a=>{
+      a.addEventListener('click', e=> e.stopPropagation());
+    });
+  });
+
   $('#pay').onclick = async ()=>{
     const name = $('#name').value.trim();
     const phone = $('#phone').value.trim();
     if(!name || !phone){ toast('Vul je naam en telefoon in.'); return; }
+
+    const ok = document.getElementById('accept_terms')?.checked;
+    if(!ok){ toast('Vink de voorwaarden aan.'); return; }
+
     const modal = $('#payModal'); modal.style.display='flex';
     drawQR();
 
@@ -121,8 +145,3 @@ document.querySelectorAll('label.terms a').forEach(a=>{
 </script>
 </body>
 </html>
-<script>
-  document.querySelectorAll('label.terms a').forEach(a=>{
-    a.addEventListener('click', e=> e.stopPropagation());
-  });
-</script>
